@@ -590,6 +590,7 @@ export const createMockStores = (): MockStoreBindings => ({
     resetMAMStates: vi.fn(),
     markAllNeedsCatchUp: vi.fn(),
     clearNeedsCatchUp: vi.fn(),
+    updateLastMessagePreview: vi.fn(),
     getAllConversations: vi.fn().mockReturnValue([]),
   },
   roster: {
@@ -651,6 +652,7 @@ export const createMockStores = (): MockStoreBindings => ({
     resetRoomMAMStates: vi.fn(),
     markAllRoomsNeedsCatchUp: vi.fn(),
     clearRoomNeedsCatchUp: vi.fn(),
+    updateLastMessagePreview: vi.fn(),
   },
   admin: {
     setIsAdmin: vi.fn(),

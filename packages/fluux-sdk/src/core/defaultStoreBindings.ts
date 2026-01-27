@@ -113,9 +113,11 @@ export function createDefaultStoreBindings(options: DefaultStoreBindingsOptions 
       resetMAMStates: chatStore.getState().resetMAMStates,
       markAllNeedsCatchUp: chatStore.getState().markAllNeedsCatchUp,
       clearNeedsCatchUp: chatStore.getState().clearNeedsCatchUp,
+      updateLastMessagePreview: chatStore.getState().updateLastMessagePreview,
       getAllConversations: () => {
         const state = chatStore.getState()
-        return Array.from(state.conversations.values()).map(conv => ({
+        // Use activeConversations() which efficiently returns only non-archived
+        return state.activeConversations().map(conv => ({
           id: conv.id,
           messages: state.messages.get(conv.id) || [],
         }))
@@ -180,6 +182,7 @@ export function createDefaultStoreBindings(options: DefaultStoreBindingsOptions 
       resetRoomMAMStates: roomStore.getState().resetRoomMAMStates,
       markAllRoomsNeedsCatchUp: roomStore.getState().markAllRoomsNeedsCatchUp,
       clearRoomNeedsCatchUp: roomStore.getState().clearRoomNeedsCatchUp,
+      updateLastMessagePreview: roomStore.getState().updateLastMessagePreview,
     },
     admin: {
       setIsAdmin: adminStore.getState().setIsAdmin,

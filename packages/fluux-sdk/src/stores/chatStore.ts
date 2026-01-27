@@ -92,6 +92,8 @@ interface ChatState {
   activeConversation: () => Conversation | null
   activeMessages: () => Message[]
   isArchived: (id: string) => boolean
+  /** Get all non-archived conversations (visible in sidebar) */
+  activeConversations: () => Conversation[]
 
   // Actions
   setActiveConversation: (id: string | null) => void
@@ -133,6 +135,13 @@ interface ChatState {
   markAllNeedsCatchUp: () => void
   /** Clear the needsCatchUp flag for a specific conversation */
   clearNeedsCatchUp: (conversationId: string) => void
+  /**
+   * Update only the lastMessage preview for a conversation without affecting the messages array.
+   * Used for background preview refresh to sync sidebar with server state after being offline.
+   * @param conversationId - Conversation JID
+   * @param lastMessage - The most recent message from MAM
+   */
+  updateLastMessagePreview: (conversationId: string, lastMessage: Message) => void
   // IndexedDB message loading
   loadMessagesFromCache: (conversationId: string, options?: { limit?: number; before?: Date }) => Promise<Message[]>
   loadOlderMessagesFromCache: (conversationId: string, limit?: number) => Promise<Message[]>
@@ -313,6 +322,17 @@ export const chatStore = createStore<ChatState>()(
 
       isArchived: (id) => {
         return get().archivedConversations.has(id)
+      },
+
+      activeConversations: () => {
+        const state = get()
+        const result: Conversation[] = []
+        for (const conv of state.conversations.values()) {
+          if (!state.archivedConversations.has(conv.id)) {
+            result.push(conv)
+          }
+        }
+        return result
       },
 
       setActiveConversation: (id) => {
@@ -905,6 +925,29 @@ export const chatStore = createStore<ChatState>()(
         set((state) => ({
           mamQueryStates: mamState.clearNeedsCatchUp(state.mamQueryStates, conversationId),
         }))
+      },
+
+      updateLastMessagePreview: (conversationId, lastMessage) => {
+        set((state) => {
+          const meta = state.conversationMeta.get(conversationId)
+          const conv = state.conversations.get(conversationId)
+          if (!meta || !conv) return state
+
+          // Only update if this message is newer than existing lastMessage
+          const existingTime = meta.lastMessage?.timestamp?.getTime() ?? 0
+          const newTime = lastMessage.timestamp?.getTime() ?? 0
+          if (newTime <= existingTime) return state
+
+          // Update metadata map
+          const newMeta = new Map(state.conversationMeta)
+          newMeta.set(conversationId, { ...meta, lastMessage })
+
+          // Update combined map for backward compatibility
+          const newConversations = new Map(state.conversations)
+          newConversations.set(conversationId, { ...conv, lastMessage })
+
+          return { conversationMeta: newMeta, conversations: newConversations }
+        })
       },
 
       // Load messages from IndexedDB cache for a conversation
