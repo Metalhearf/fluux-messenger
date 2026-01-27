@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Message toolbar locks when emoji picker or menu is open
+- Event-based SDK infrastructure to make the app more reactive
 
 ### Fixed
 
