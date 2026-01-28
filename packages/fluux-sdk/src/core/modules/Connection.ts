@@ -568,7 +568,10 @@ export class Connection extends BaseModule {
    * This is called when we detect the WebSocket died silently (e.g., after sleep).
    */
   handleDeadSocket(): void {
-    if (this.isReconnecting || this.isManualDisconnect) return
+    // Don't reconnect if already reconnecting, manual disconnect, or resource conflict
+    if (this.isReconnecting || this.isManualDisconnect || this.disconnectReason === 'conflict') {
+      return
+    }
 
     this.stores.console.addEvent('Dead connection detected, will reconnect', 'connection')
     this.stores.connection.setStatus('reconnecting')
@@ -1107,7 +1110,13 @@ export class Connection extends BaseModule {
    * Schedule a reconnection attempt with exponential backoff.
    */
   private scheduleReconnect(): void {
-    if (!this.credentials || this.isManualDisconnect) return
+    // Don't reconnect if:
+    // - No credentials (can't reconnect)
+    // - Manual disconnect (user initiated)
+    // - Resource conflict (another client connected - would cause ping-pong loop)
+    if (!this.credentials || this.isManualDisconnect || this.disconnectReason === 'conflict') {
+      return
+    }
 
     this.isReconnecting = true
     this.reconnectAttempt++
@@ -1150,7 +1159,10 @@ export class Connection extends BaseModule {
    * Attempt to reconnect with saved credentials.
    */
   private async attemptReconnect(): Promise<void> {
-    if (!this.credentials || this.isManualDisconnect) return
+    // Same guards as scheduleReconnect - don't attempt if conflict occurred
+    if (!this.credentials || this.isManualDisconnect || this.disconnectReason === 'conflict') {
+      return
+    }
 
     this.stores.connection.setStatus('connecting')
     this.stores.connection.setReconnectState(this.reconnectAttempt, null)
