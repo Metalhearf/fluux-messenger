@@ -207,8 +207,8 @@ jobs:
 
       - name: Build Flatpak
         run: |
-          # Find the built deb file
-          DEB_FILE=$(find apps/fluux/src-tauri/target/release/bundle/deb -name "*.deb" | head -1)
+          # Find the built deb file (use lowercase kebab-case version)
+          DEB_FILE=$(find apps/fluux/src-tauri/target/release/bundle/deb -name "fluux-messenger*.deb" -not -name "*.sig" | head -1)
           echo "Found deb: $DEB_FILE"
 
           # Copy deb to flatpak directory
