@@ -90,7 +90,7 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
                     class="w-10 flex-shrink-0"
                   >
                     <div
-                      class="inline-flex"
+                      class="cursor-pointer "
                     >
                       <div
                         class="select-none"
@@ -112,56 +112,40 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
                       <div
                         class="flex items-center bg-fluux-bg rounded-md shadow-lg border border-fluux-hover transition-opacity"
                       >
-                        <div
-                          class="inline-flex"
+                        <button
+                          aria-label="chat.reactWith"
+                          class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
                         >
-                          <button
-                            aria-label="chat.reactWith"
-                            class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
-                          >
-                            👍
-                          </button>
-                        </div>
-                        <div
-                          class="inline-flex"
+                          👍
+                        </button>
+                        <button
+                          aria-label="chat.reactWith"
+                          class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
                         >
-                          <button
-                            aria-label="chat.reactWith"
-                            class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
-                          >
-                            ❤️
-                          </button>
-                        </div>
-                        <div
-                          class="inline-flex"
+                          ❤️
+                        </button>
+                        <button
+                          aria-label="chat.reactWith"
+                          class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
                         >
-                          <button
-                            aria-label="chat.reactWith"
-                            class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
-                          >
-                            😂
-                          </button>
-                        </div>
+                          😂
+                        </button>
                         <div
                           class="w-px h-5 bg-fluux-hover"
                         />
                         <div
                           class="relative"
                         >
-                          <div
-                            class="inline-flex"
+                          <button
+                            aria-label="chat.moreReactions"
+                            class="p-1.5 transition-colors hover:bg-fluux-hover"
                           >
-                            <button
-                              aria-label="chat.moreReactions"
-                              class="p-1.5 transition-colors hover:bg-fluux-hover"
+                            <span
+                              data-testid="icon-emoji"
                             >
-                              <span
-                                data-testid="icon-emoji"
-                              >
-                                Emoji
-                              </span>
-                            </button>
-                          </div>
+                              Emoji
+                            </span>
+                          </button>
                         </div>
                         <div
                           class="inline-flex"
@@ -217,10 +201,10 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
                       class="flex items-baseline gap-2 pb-1 flex-wrap"
                     >
                       <div
-                        class="inline-flex"
+                        class="cursor-pointer "
                       >
                         <span
-                          class="font-medium cursor-default"
+                          class="font-medium"
                           style="color: rgb(0, 0, 0);"
                         >
                           Alice Smith
@@ -259,7 +243,7 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
                     class="w-10 flex-shrink-0"
                   >
                     <div
-                      class="inline-flex"
+                      class="cursor-pointer "
                     >
                       <div
                         class="select-none"
@@ -281,56 +265,40 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
                       <div
                         class="flex items-center bg-fluux-bg rounded-md shadow-lg border border-fluux-hover transition-opacity"
                       >
-                        <div
-                          class="inline-flex"
+                        <button
+                          aria-label="chat.reactWith"
+                          class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
                         >
-                          <button
-                            aria-label="chat.reactWith"
-                            class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
-                          >
-                            👍
-                          </button>
-                        </div>
-                        <div
-                          class="inline-flex"
+                          👍
+                        </button>
+                        <button
+                          aria-label="chat.reactWith"
+                          class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
                         >
-                          <button
-                            aria-label="chat.reactWith"
-                            class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
-                          >
-                            ❤️
-                          </button>
-                        </div>
-                        <div
-                          class="inline-flex"
+                          ❤️
+                        </button>
+                        <button
+                          aria-label="chat.reactWith"
+                          class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
                         >
-                          <button
-                            aria-label="chat.reactWith"
-                            class="px-2 py-1.5 transition-colors text-base hover:bg-fluux-hover "
-                          >
-                            😂
-                          </button>
-                        </div>
+                          😂
+                        </button>
                         <div
                           class="w-px h-5 bg-fluux-hover"
                         />
                         <div
                           class="relative"
                         >
-                          <div
-                            class="inline-flex"
+                          <button
+                            aria-label="chat.moreReactions"
+                            class="p-1.5 transition-colors hover:bg-fluux-hover"
                           >
-                            <button
-                              aria-label="chat.moreReactions"
-                              class="p-1.5 transition-colors hover:bg-fluux-hover"
+                            <span
+                              data-testid="icon-emoji"
                             >
-                              <span
-                                data-testid="icon-emoji"
-                              >
-                                Emoji
-                              </span>
-                            </button>
-                          </div>
+                              Emoji
+                            </span>
+                          </button>
                         </div>
                         <div
                           class="inline-flex"
@@ -385,10 +353,10 @@ exports[`ChatView > Snapshots > should match snapshot with messages 1`] = `
                       class="flex items-baseline gap-2 pb-1 flex-wrap"
                     >
                       <div
-                        class="inline-flex"
+                        class="cursor-pointer "
                       >
                         <span
-                          class="font-medium cursor-default"
+                          class="font-medium"
                           style="color: var(--fluux-green);"
                         >
                           Me
