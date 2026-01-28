@@ -15,6 +15,17 @@
 
 </div>
 
+## 📑 Table of Contents
+
+- [🎨 Screenshots](#-screenshots)
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+- [📚 Technology Stack](#-technology-stack)
+- [🆘 Support & Community](#-support-and-community)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [⭐ Star History](#-star-history)
+
 ## 🎨 Screenshots
 
 <div align="center">
@@ -40,16 +51,17 @@
 
 ## ✨ Features
 
-- **Modern XMPP Client** - React-based UI with TypeScript, cross-platform (web, desktop)
-- **Self-hostable** - Connect to any XMPP server, no vendor lock-in. Self-host the web app or install a desktop client, do as you please.
-- **(Almost) Full Protocol Support** - 40+ XEPs implemented including MAM, MUC, HTTP file uploads
+- **Modern XMPP Client** - React-based UI with TypeScript
+- **Cross-platform** - Available on web and desktop (Tauri-based)
+- **Extensive XMPP Protocol Support** - 40+ XEPs implemented, including MAM, MUC, HTTP File Upload, message carbons, and reactions (and more to come)
 - **Built-in XMPP Console** - Debug interface for developers and power users
-- **Real-time Messaging** - Typing indicators, message reactions, corrections, and carbons
-- **Multi-user Chat** - Complete MUC support with roles, affiliations, @mentions, bookmarks
+- **Multi-user Chat** - Complete MUC support with roles, affiliations, @mentions, and bookmarks
 - **File Sharing** - HTTP uploads with thumbnails, progress indicators, and previews
-- **Offline Support** - IndexedDB storage with automatic sync when reconnected
-- **Theme System** - Light/dark themes that synchronize across devices
-- **Open Source** - AGPL-3.0 licensed.
+- **Real-time Messaging** - Typing indicators, message corrections, and delivery features
+- **Offline Support** - IndexedDB storage with automatic sync on reconnect
+- **Theme System** - Light/dark themes synchronized across devices
+- **Self-hostable** - Connect to any XMPP server, no vendor lock-in
+- **Open Source** - AGPL-3.0 licensed
 
 ## 🚀 Quick Start
 
@@ -65,15 +77,17 @@
 - **XMPP**: @xmpp/client + @fluux/sdk
 - **Storage**: IndexedDB with idb
 
-## 🆘 Support
+## 🆘 Support and Community
 
-- **XMPP chatroom**: [fluux-messenger@conference.process-one.net](xmpp:fluux-messenger@conference.process-one.net?join)
-- **Discussions**: [GitHub Discussions](https://github.com/processone/fluux-messenger/discussions)
-- **Issues**: [GitHub Issues](https://github.com/processone/fluux-messenger/issues)
+We welcome all questions, feedback, and bug reports!  
+
+- **GitHub Issues** - Use [Issues](https://github.com/processone/fluux-messenger/issues) to report bugs, request features, or track tasks. Issues are preferred for anything that needs action or official tracking. We also use Issues as a lightweight roadmap for upcoming improvements.  
+- **GitHub Discussions** - Use [Discussions](https://github.com/processone/fluux-messenger/discussions) for questions, ideas, or general conversations that don’t require formal tracking. Great for brainstorming or getting help without opening an Issue.  
+- **XMPP Chatroom** - Join [fluux-messenger@conference.process-one.net](xmpp:fluux-messenger@conference.process-one.net?join) for live chat with the community and maintainers.
 
 ## 🤝 Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+Contributions are welcome! See [CONTRIBUTING](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📄 License
 
