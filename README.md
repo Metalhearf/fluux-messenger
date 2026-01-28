@@ -17,17 +17,17 @@
 
 ## 📑 Table of Contents
 
-- [🎨 Screenshots](#-screenshots)
-- [✨ Features](#-features)
-- [🚀 Quick Start](#-quick-start)
-- [📚 Technology Stack](#-technology-stack)
-- [🆘 Support & Community](#-support-and-community)
-- [❓ Frequently Asked Questions](#-frequently-asked-questions)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-- [⭐ Star History](#-star-history)
+- [Screenshots](#-screenshots)
+- [Features](#-features)
+- [Quick Start](#-quick-start)
+- [Technology Stack](#-technology-stack)
+- [Support & Community](#-support-and-community)
+- [Frequently Asked Questions](#-frequently-asked-questions)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Star History](#-star-history)
 
-## 🎨 Screenshots
+## Screenshots
 
 <div align="center">
 
@@ -50,7 +50,7 @@
 
 </div>
 
-## ✨ Features
+## Features
 
 - **Modern XMPP Client** - React-based UI with TypeScript
 - **Cross-platform** - Available on web and desktop (Tauri-based)
@@ -64,7 +64,7 @@
 - **Self-hostable** - Connect to any XMPP server, no vendor lock-in
 - **Open Source** - AGPL-3.0 licensed
 
-## 🚀 Quick Start
+## Quick Start
 
 Get started with Fluux Messenger in a few simple steps:
 
@@ -76,7 +76,7 @@ Get started with Fluux Messenger in a few simple steps:
 
 Need help? Check out our [support options](#-support-and-community) below.
 
-## 📚 Technology Stack
+## Technology Stack
 
 - **Frontend**: React 18 + TypeScript
 - **Desktop**: Tauri 2.x (Rust-based, lightweight)
@@ -86,7 +86,7 @@ Need help? Check out our [support options](#-support-and-community) below.
 - **XMPP**: @xmpp/client + @fluux/sdk
 - **Storage**: IndexedDB with idb
 
-## 🆘 Support and Community
+## Support and Community
 
 We have many ideas and exciting additions planned for Fluux Messenger! We welcome all questions, feedback, and bug reports.  
 
@@ -94,7 +94,7 @@ We have many ideas and exciting additions planned for Fluux Messenger! We welcom
 - **GitHub Discussions** - Use [Discussions](https://github.com/processone/fluux-messenger/discussions) for questions, ideas, or general conversations that don't require formal tracking. Great for brainstorming, getting help without opening an Issue, or suggesting documentation improvements.  
 - **XMPP Chatroom** - Join [fluux-messenger@conference.process-one.net](xmpp:fluux-messenger@conference.process-one.net?join) for live chat with the community and maintainers.
 
-## ❓ Frequently Asked Questions
+## Frequently Asked Questions
 
 *Have suggestions for this FAQ? Feel free to ask questions or propose additions in our [Q&A Discussions](https://github.com/processone/fluux-messenger/discussions/categories/q-a).*
 
@@ -102,15 +102,15 @@ We have many ideas and exciting additions planned for Fluux Messenger! We welcom
 
 We aim to create an XMPP client that respects standards, but currently the project has been tested **exclusively with [ejabberd](https://github.com/processone/ejabberd)**. We're eager to receive feedback on compatibility with other servers. If you test Fluux Messenger with a different XMPP server, please share your experience in the [Discussions](https://github.com/processone/fluux-messenger/discussions)!
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! See [CONTRIBUTING](CONTRIBUTING.md) for detailed guidelines.
 
-## 📄 License
+## License
 
 Fluux Messenger is licensed under the **GNU Affero General Public License v3.0 or later**. See [LICENSE](LICENSE)
 
-## ⭐ Star History
+## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=processone/fluux-messenger&type=Date&theme=dark&legend=bottom-right)](https://star-history.com/#processone/fluux-messenger&Date&legend=bottom-right)
 
