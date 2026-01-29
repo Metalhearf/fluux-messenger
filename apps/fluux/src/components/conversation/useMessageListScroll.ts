@@ -177,20 +177,54 @@ export function useMessageListScroll({
     const scrollTop = scroller.scrollTop
     const messages = scroller.querySelectorAll('[data-message-id]')
 
+    if (messages.length === 0) {
+      debugLog('FIND ANCHOR: no messages found')
+      return null
+    }
+
+    const scrollerRect = scroller.getBoundingClientRect()
+
     for (const msg of messages) {
       const element = msg as HTMLElement
       const rect = element.getBoundingClientRect()
-      const scrollerRect = scroller.getBoundingClientRect()
       const offsetFromViewportTop = rect.top - scrollerRect.top
 
-      // First message whose top is at or below the viewport top
+      // First message whose top is at or below the viewport top (with half-height tolerance)
       if (offsetFromViewportTop >= -rect.height / 2) {
-        return {
+        const result = {
           id: element.dataset.messageId!,
           offsetFromTop: element.offsetTop - scrollTop,
         }
+        debugLog('FIND ANCHOR: found', {
+          id: result.id,
+          offsetFromTop: result.offsetFromTop,
+          offsetFromViewportTop,
+          scrollTop,
+          elementOffsetTop: element.offsetTop,
+        })
+        return result
       }
     }
+
+    // Fallback: if no message matched criteria, use the first message
+    // This can happen during rapid scrolling when scrollTop is 0 but
+    // the first message has negative offsetFromViewportTop
+    const firstMsg = messages[0] as HTMLElement
+    if (firstMsg) {
+      const result = {
+        id: firstMsg.dataset.messageId!,
+        offsetFromTop: firstMsg.offsetTop - scrollTop,
+      }
+      debugLog('FIND ANCHOR: using first message as fallback', {
+        id: result.id,
+        offsetFromTop: result.offsetFromTop,
+        scrollTop,
+        elementOffsetTop: firstMsg.offsetTop,
+      })
+      return result
+    }
+
+    debugLog('FIND ANCHOR: no anchor found')
     return null
   }, [])
 
@@ -364,8 +398,8 @@ export function useMessageListScroll({
   // ==========================================================================
   //
   // This runs in useLayoutEffect so it happens BEFORE the browser paints.
-  // We restore the user's visual position using pure math:
-  //   newScrollTop = scrollHeight - clientHeight - savedDistanceFromBottom
+  // We restore the user's visual position using element-based positioning,
+  // falling back to distance-from-bottom math if the anchor element isn't found.
 
   useLayoutEffect(() => {
     const scroller = scrollerRef.current
@@ -393,8 +427,14 @@ export function useMessageListScroll({
       return
     }
 
+    // Force reflow first to ensure browser has calculated new layout
+    void scroller.offsetHeight
+
+    const maxScrollTop = scroller.scrollHeight - scroller.clientHeight
+
     // Try element-based positioning first (more reliable)
     let newScrollTop: number | null = null
+    let usedMethod = 'none'
 
     if (saved.anchorMessageId) {
       const anchorElement = scroller.querySelector(
@@ -404,12 +444,14 @@ export function useMessageListScroll({
       if (anchorElement) {
         // Position the anchor element at the same offset from viewport top as before
         newScrollTop = anchorElement.offsetTop - saved.anchorOffsetFromTop
+        usedMethod = 'element-based'
 
         debugLog('PREPEND RESTORE (element-based)', {
           anchorMessageId: saved.anchorMessageId,
           anchorOffsetTop: anchorElement.offsetTop,
           savedOffsetFromTop: saved.anchorOffsetFromTop,
           newScrollTop,
+          maxScrollTop,
         })
       }
     }
@@ -417,40 +459,115 @@ export function useMessageListScroll({
     // Fallback to distance-from-bottom math if element not found
     if (newScrollTop === null) {
       newScrollTop = scroller.scrollHeight - scroller.clientHeight - saved.distanceFromBottom
+      usedMethod = 'math-fallback'
 
       debugLog('PREPEND RESTORE (math-based fallback)', {
         newScrollTop,
         scrollHeight: scroller.scrollHeight,
         clientHeight: scroller.clientHeight,
         savedDistanceFromBottom: saved.distanceFromBottom,
+        maxScrollTop,
+      })
+    }
+
+    // BOUNDS CHECK: Ensure scroll position is valid
+    // This prevents blank window when scroll position is out of range
+    const boundedScrollTop = Math.max(0, Math.min(newScrollTop, maxScrollTop))
+
+    if (boundedScrollTop !== newScrollTop) {
+      debugLog('PREPEND RESTORE BOUNDS CLAMPED', {
+        original: newScrollTop,
+        bounded: boundedScrollTop,
+        maxScrollTop,
+        usedMethod,
       })
     }
 
     debugLog('PREPEND RESTORE FINAL', {
-      newScrollTop,
+      newScrollTop: boundedScrollTop,
+      usedMethod,
       oldFirstId: saved.oldFirstId,
       newFirstId: firstMessageId,
       messageCount,
       scrollHeightBefore: scroller.scrollHeight,
       scrollTopBefore: scroller.scrollTop,
+      maxScrollTop,
     })
-
-    // Force reflow to ensure browser has calculated new layout
-    void scroller.offsetHeight
 
     // Set scroll position synchronously - this happens before browser paint
-    scroller.scrollTop = Math.max(0, newScrollTop)
+    scroller.scrollTop = boundedScrollTop
+
+    // Verify it was applied (browser may have clamped further)
+    const actualScrollTop = scroller.scrollTop
+    if (Math.abs(actualScrollTop - boundedScrollTop) > 1) {
+      debugLog('PREPEND RESTORE MISMATCH', {
+        requested: boundedScrollTop,
+        actual: actualScrollTop,
+        diff: actualScrollTop - boundedScrollTop,
+      })
+    }
 
     debugLog('PREPEND RESTORE APPLIED', {
-      scrollTopAfter: scroller.scrollTop,
+      scrollTopAfter: actualScrollTop,
       scrollHeightAfter: scroller.scrollHeight,
     })
+
+    // FIGHT SCROLL MOMENTUM: When user is actively scrolling (trackpad/wheel),
+    // the browser may have queued momentum events that override our position.
+    // Re-assert the scroll position for several frames to ensure it sticks.
+    const targetScrollTop = boundedScrollTop
+    let framesRemaining = 15 // ~250ms at 60fps
+    const assertPosition = () => {
+      if (framesRemaining <= 0 || !scrollerRef.current) return
+      framesRemaining--
+
+      const currentScrollTop = scrollerRef.current.scrollTop
+      if (Math.abs(currentScrollTop - targetScrollTop) > 5) {
+        debugLog('PREPEND REASSERT (momentum override detected)', {
+          target: targetScrollTop,
+          current: currentScrollTop,
+          framesRemaining,
+        })
+        scrollerRef.current.scrollTop = targetScrollTop
+      }
+      requestAnimationFrame(assertPosition)
+    }
+    requestAnimationFrame(assertPosition)
 
     // Mark as restored but keep the ref for a cooldown period
     // This prevents ResizeObserver from interfering
     saved.restored = true
     saved.restoredAt = Date.now()
     lastRestoreTimeRef.current = Date.now() // Track restore time to prevent rapid re-loading
+
+    // POST-PAINT VERIFICATION: Check if scroll position changed after paint
+    // This helps detect if something else (ResizeObserver, another effect) is interfering
+    const expectedScrollTop = actualScrollTop
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Double rAF to ensure we're after paint
+        if (scrollerRef.current) {
+          const postPaintScrollTop = scrollerRef.current.scrollTop
+          const postPaintScrollHeight = scrollerRef.current.scrollHeight
+          if (Math.abs(postPaintScrollTop - expectedScrollTop) > 5) {
+            debugLog('PREPEND POSITION CHANGED POST-PAINT!', {
+              expected: expectedScrollTop,
+              actual: postPaintScrollTop,
+              diff: postPaintScrollTop - expectedScrollTop,
+              scrollHeight: postPaintScrollHeight,
+              clientHeight: scrollerRef.current.clientHeight,
+              // Check if viewport shows content
+              viewportStart: postPaintScrollTop,
+              viewportEnd: postPaintScrollTop + scrollerRef.current.clientHeight,
+            })
+          } else {
+            debugLog('PREPEND POSITION STABLE POST-PAINT', {
+              scrollTop: postPaintScrollTop,
+            })
+          }
+        }
+      })
+    })
 
     // Clear after cooldown
     setTimeout(() => {
@@ -471,15 +588,30 @@ export function useMessageListScroll({
 
     // Don't interfere with prepend (either in progress or just restored)
     if (prependRef.current) {
-      debugLog('NEW MSG SKIP (prepend active)', { messageCount, prevCount: prevMessageCountRef.current })
+      debugLog('NEW MSG SKIP (prepend active)', {
+        messageCount,
+        prevCount: prevMessageCountRef.current,
+        prependRestored: prependRef.current.restored,
+      })
       prevMessageCountRef.current = messageCount
       return
     }
 
     const isNewMessage = messageCount > prevMessageCountRef.current
     if (isNewMessage && isAtBottomRef.current) {
-      debugLog('NEW MSG SCROLL TO BOTTOM', { messageCount, isAtBottom: isAtBottomRef.current })
+      debugLog('NEW MSG SCROLL TO BOTTOM', {
+        messageCount,
+        prevCount: prevMessageCountRef.current,
+        isAtBottom: isAtBottomRef.current,
+        scrollTopBefore: scroller.scrollTop,
+      })
       scroller.scrollTop = scroller.scrollHeight
+    } else if (isNewMessage) {
+      debugLog('NEW MSG NO SCROLL (not at bottom)', {
+        messageCount,
+        prevCount: prevMessageCountRef.current,
+        isAtBottom: isAtBottomRef.current,
+      })
     }
 
     prevMessageCountRef.current = messageCount
@@ -546,6 +678,7 @@ export function useMessageListScroll({
 
     const observer = new ResizeObserver(() => {
       const newHeight = scroller.scrollHeight
+      const currentScrollTop = scroller.scrollTop
 
       // Skip during prepend (in progress or just restored)
       if (prependRef.current) {
@@ -553,6 +686,7 @@ export function useMessageListScroll({
           newHeight,
           lastHeight,
           restored: prependRef.current.restored,
+          currentScrollTop,
         })
         lastHeight = newHeight
         return
@@ -564,8 +698,16 @@ export function useMessageListScroll({
           newHeight,
           lastHeight,
           isAtBottom: isAtBottomRef.current,
+          scrollTopBefore: currentScrollTop,
         })
         scroller.scrollTop = newHeight
+      } else if (newHeight !== lastHeight) {
+        debugLog('RESIZE NO SCROLL', {
+          newHeight,
+          lastHeight,
+          isAtBottom: isAtBottomRef.current,
+          currentScrollTop,
+        })
       }
 
       lastHeight = newHeight
